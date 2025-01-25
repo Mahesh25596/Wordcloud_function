@@ -32,11 +32,11 @@ Note the API Gateway endpoint and S3 bucket name from the outputs.
 ###3. Package Lambda Function
 Install required Python libraries:
 ```bash
-pip install wordcloud matplotlib boto3 -t .
+pip install wordcloud matplotlib boto3 -t
 ```
 Create a zip file:
 ```bash
-zip -r wordcloud_function.zip .
+zip -r wordcloud_function.zip
 ```
 Replace the file path in the Terraform script for wordcloud_function.zip.
 4. Test the API
