@@ -17,8 +17,8 @@ This project provides a serverless solution for generating word clouds from inpu
 ### 1. Clone the Repository
 ```bash
 git clone <repository-url>
-
-Deploy Terraform Resources
+```bash
+###Deploy Terraform Resources
 Navigate to the Terraform directory.
 Initialize Terraform:
 
