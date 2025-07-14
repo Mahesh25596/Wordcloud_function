@@ -7,17 +7,17 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-# S3 Bucket with ACLs disabled (modern approach)
+
 resource "aws_s3_bucket" "wordcloud_bucket" {
   bucket = "serverless-wordcloud-bucket-${random_id.bucket_suffix.hex}"
 }
 
-# Block ALL public access (we'll use bucket policy instead)
+
 resource "aws_s3_bucket_public_access_block" "bucket_access" {
   bucket = aws_s3_bucket.wordcloud_bucket.id
 
   block_public_acls       = true
-  block_public_policy     = false  # We need this false to allow our bucket policy
+  block_public_policy     = false  
   ignore_public_acls      = true
   restrict_public_buckets = false
 }
@@ -68,7 +68,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-# More restricted S3 policy instead of full access
+#  S3 policy 
 resource "aws_iam_role_policy" "lambda_s3" {
   name = "lambda_s3_policy"
   role = aws_iam_role.lambda_exec_role.id
