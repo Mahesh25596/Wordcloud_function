@@ -101,10 +101,13 @@ Common Issues:
      
 
 View Logs:
+```bash
 aws logs tail /aws/lambda/wordcloud-generator --follow
-
+```
 Clean Up
 --------
 To remove all resources:
+```bash
 terraform destroy
+```
 
