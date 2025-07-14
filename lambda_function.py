@@ -4,7 +4,7 @@ import os
 import sys
 from wordcloud import WordCloud
 import matplotlib
-matplotlib.use('Agg')  # Important for Lambda environment
+matplotlib.use('Agg')  
 import matplotlib.pyplot as plt
 
 s3 = boto3.client('s3')
@@ -14,7 +14,6 @@ def lambda_handler(event, context):
     try:
         print("Received event: " + json.dumps(event))
         
-        # Parse input text
         if 'body' not in event:
             return {
                 'statusCode': 400,
@@ -37,10 +36,8 @@ def lambda_handler(event, context):
                 'body': json.dumps({'error': 'Text input is required'})
             }
         
-        # Generate WordCloud
         wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
         
-        # Save WordCloud image
         image_path = '/tmp/wordcloud.png'
         plt.figure(figsize=(8, 4))
         plt.imshow(wordcloud, interpolation='bilinear')
@@ -48,7 +45,6 @@ def lambda_handler(event, context):
         plt.savefig(image_path, bbox_inches='tight', pad_inches=0)
         plt.close()
         
-        # Upload to S3
         s3_key = f"wordclouds/wordcloud_{context.aws_request_id}.png"
         s3.upload_file(
             image_path, 
@@ -59,7 +55,6 @@ def lambda_handler(event, context):
             }
         )
         
-        # Generate public URL
         s3_url = f"https://{bucket_name}.s3.amazonaws.com/{s3_key}"
         
         return {
