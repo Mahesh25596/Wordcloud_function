@@ -27,10 +27,7 @@ Deployment
 
 1. Build Lambda Layer
 ---------------------
-Run these commands:
 
-# Clean previous builds
-rm -rf python wordcloud-layer.zip
 
 # Create layer with Docker (recommended)
 mkdir -p python
