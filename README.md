@@ -25,7 +25,7 @@ Prerequisites
 Deployment
 ----------
 
-##1. Build Lambda Layer
+## 1. Build Lambda Layer
 ---------------------
 
 
