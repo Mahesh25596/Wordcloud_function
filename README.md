@@ -34,11 +34,11 @@ Create layer with Docker (recommended)
 ```bash
 mkdir -p python
 docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.10" /bin/sh -c \
-pip install numpy==1.24.4 matplotlib==3.7.1 pillow==9.5.0 wordcloud==1.8.2.2 -t python \
+"pip install numpy==1.24.4 matplotlib==3.7.1 pillow==9.5.0 wordcloud==1.8.2.2 -t python \
 && find python -name '*.so' | xargs strip -Sx \
 && find python -type d -name '__pycache__' -exec rm -rf {} + \
 && rm -rf python/*.dist-info \
-&& zip -r9 wordcloud-layer.zip python
+&& zip -r9 wordcloud-layer.zip python"
 ```
 
 ## 2. Prepare Lambda Function
