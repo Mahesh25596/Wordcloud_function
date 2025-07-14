@@ -1,51 +1,100 @@
-# Serverless Word Cloud Generator
+Serverless WordCloud Generator on AWS
+====================================
 
-This project provides a serverless solution for generating word clouds from input text. The solution uses AWS services including Lambda, API Gateway, and S3, provisioned via Terraform.
+A serverless application that generates word clouds from text input using AWS Lambda, API Gateway, and S3.
 
-## Features
-- Accepts text input via an API Gateway endpoint.
-- Generates a word cloud image using a Lambda function.
-- Stores the image in an S3 bucket and returns a public URL.
+Features
+--------
+- Fully serverless architecture
+- Automatic scaling
+- Secure S3 bucket configuration
+- Dependency management via Lambda Layers
+- Public API endpoint
 
-## Prerequisites
-- AWS CLI configured with necessary permissions.
-- Terraform installed on your system.
-- Python 3.9 environment with required libraries for packaging the Lambda function (`wordcloud`, `matplotlib`, `boto3`).
+Architecture
+------------
+API Gateway -> Lambda Function -> S3 Bucket -> Public URL
 
-## Setup Instructions
+Prerequisites
+-------------
+- AWS account with CLI configured
+- Terraform installed
+- Docker (for building Lambda layer)
+- Python 3.10
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Mahesh25596/Wordcloud_function.git
-```
-### 2. Deploy Terraform Resources
-Navigate to the Terraform directory.
-Initialize Terraform:
-```bash
+Deployment
+----------
+
+1. Build Lambda Layer
+---------------------
+Run these commands:
+
+# Clean previous builds
+rm -rf python wordcloud-layer.zip
+
+# Create layer with Docker (recommended)
+mkdir -p python
+docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.10" /bin/sh -c \
+"pip install numpy==1.24.4 matplotlib==3.7.1 pillow==9.5.0 wordcloud==1.8.2.2 -t python \
+&& find python -name '*.so' | xargs strip -Sx \
+&& find python -type d -name '__pycache__' -exec rm -rf {} + \
+&& rm -rf python/*.dist-info \
+&& zip -r9 wordcloud-layer.zip python"
+
+2. Prepare Lambda Function
+-------------------------
+Create lambda_function.py with the provided code and zip it:
+
+zip lambda-function.zip lambda_function.py
+
+3. Deploy Infrastructure
+------------------------
 terraform init
-```
-Deploy the resources:
-```bash
 terraform apply
-```
-Note the API Gateway endpoint and S3 bucket name from the outputs.
 
-### 3. Package Lambda Function
-Install required Python libraries:
-```bash
-pip install wordcloud matplotlib boto3 -t
-```
-Create a zip file:
-```bash
-zip -r wordcloud_function.zip
-```
-Replace the file path in the Terraform script for wordcloud_function.zip.
-### 4. Test the API
-Use a tool like Postman or curl to send a POST request to the API Gateway endpoint with the following JSON body:
-```
+Usage
+-----
+
+API Endpoint:
+POST https://[api-id].execute-api.us-east-1.amazonaws.com/prod/generate
+
+Example Request:
+curl -X POST "https://[api-id].execute-api.us-east-1.amazonaws.com/prod/generate" \
+-H "Content-Type: application/json" \
+-d '{"text":"hello world hello cloud hello serverless"}'
+
+Example Response:
 {
-  "text": "Your input text here to generate the word cloud"
+  "image_url": "https://your-bucket.s3.amazonaws.com/wordclouds/wordcloud_abc123.png"
 }
-```
-### 5. View the Word Cloud
-The API response will contain the public URL of the generated word cloud image. Open the URL in a browser to view it.
+
+Configuration
+-------------
+Environment Variables:
+BUCKET_NAME - S3 bucket for word clouds
+
+Troubleshooting
+---------------
+
+Common Issues:
+
+1. Docker Permission Denied
+   sudo usermod -aG docker $USER
+   newgrp docker
+
+2. Lambda Import Errors
+   - Verify layer is properly built
+   - Check CloudWatch logs
+
+3. S3 Access Issues
+   - Verify bucket policy allows public reads
+   - Check IAM permissions
+
+View Logs:
+aws logs tail /aws/lambda/wordcloud-generator --follow
+
+Clean Up
+--------
+To remove all resources:
+terraform destroy
+
