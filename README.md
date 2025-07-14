@@ -25,11 +25,11 @@ Prerequisites
 Deployment
 ----------
 
-1. Build Lambda Layer
+##1. Build Lambda Layer
 ---------------------
 
 
-# Create layer with Docker (recommended)
+Create layer with Docker (recommended)
 mkdir -p python
 docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.10" /bin/sh -c \
 "pip install numpy==1.24.4 matplotlib==3.7.1 pillow==9.5.0 wordcloud==1.8.2.2 -t python \
@@ -38,13 +38,13 @@ docker run -v "$PWD":/var/task "public.ecr.aws/sam/build-python3.10" /bin/sh -c 
 && rm -rf python/*.dist-info \
 && zip -r9 wordcloud-layer.zip python"
 
-2. Prepare Lambda Function
+##2. Prepare Lambda Function
 -------------------------
 Create lambda_function.py with the provided code and zip it:
 
 zip lambda-function.zip lambda_function.py
 
-3. Deploy Infrastructure
+##3. Deploy Infrastructure
 ------------------------
 terraform init
 terraform apply
